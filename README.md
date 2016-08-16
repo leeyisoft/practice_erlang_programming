@@ -9,7 +9,8 @@ http://www.oreilly.com/catalog/9780596518189/
 
 http://erlangprogramming.org/ （貌似已经没有相关内容了）
 
-# 第三章
+# 第三章 Erlang顺序编程
+
 ## 3-1 表达式求值
 
 ### 编写一个函数sum/1，给定一个正整数N，其返还的是1~N之和。
@@ -257,3 +258,124 @@ index:chpattern([1,1,2,3,4,5]).
 46> text:format("text.txt").
 ```
 结果输出到 text_format.txt 文件里面
+
+# 第四章 并发编程
+
+## example4-1 example_echo进程
+代码： /chapter4/example_echo.erl
+## example4-2 echo进程
+代码： /chapter4/example_echo2.erl
+
+```shellerlang
+11> c(example_echo2).
+{ok,example_echo2}
+12> example_echo2:go().
+hello
+ok
+13> self().
+<0.33.0>
+14> whereis(example_echo2).
+<0.81.0>
+15> whereis(example_echo).
+undefined
+16> whereis(example_echo2).
+<0.81.0>
+17> regs().    
+
+** Registered procs on node nonode@nohost **
+Name                  Pid          Initial Call                      Reds Msgs
+application_controlle <0.7.0>      erlang:apply/2                     404    0
+code_server           <0.12.0>     erlang:apply/2                  156718    0
+example_echo2                 <0.92.0>     example_echo2:loop/0                         3    0
+erl_prim_loader       <0.3.0>      erlang:apply/2                  785482    0
+error_logger          <0.6.0>      gen_event:init_it/6                227    0
+file_server_2         <0.20.0>     file_server:init/1                3218    0
+global_group          <0.19.0>     global_group:init/1                 53    0
+global_name_server    <0.15.0>     global:init/1                       45    0
+inet_db               <0.18.0>     inet_db:init/1                     234    0
+init                  <0.0.0>      otp_ring0:start/2                 2462    0
+kernel_safe_sup       <0.29.0>     supervisor:kernel/1                 56    0
+kernel_sup            <0.11.0>     supervisor:kernel/1               2016    0
+rex                   <0.14.0>     rpc:init/1                          21    0
+standard_error        <0.22.0>     erlang:apply/2                       9    0
+standard_error_sup    <0.21.0>     supervisor_bridge:standar           34    0
+user                  <0.25.0>     group:server/3                      36    0
+user_drv              <0.24.0>     user_drv:server/2                15920    0
+
+** Registered ports on node nonode@nohost **
+Name                  Id              Command                                 
+ok
+18> example_echo2 ! stop.  
+stop
+
+```
+
+## my_timer
+
+代码： /chapter4/my_timer.erl
+
+```shellerlang
+29> c(my_timer).
+{ok,my_timer}
+30> my_timer:send_after(3000, "hello leeyi").
+<0.108.0>
+31> flush().                                 
+ok
+32> flush().
+Shell got "hello leeyi"
+ok
+33> flush().
+ok
+```
+
+## 性能基准测试
+
+
+代码： /chapter4/myring.erl
+
+* tc(Module, Function, Arguments) -> {Time, Value}
+
+    Types:
+
+    Module = module()
+    Function = atom()
+    Arguments = [term()]
+    Time = integer()
+    In microseconds
+    Value = term()
+    tc/3
+    Evaluates apply(Module, Function, Arguments) and measures the elapsed real time as reported by os:timestamp/0.
+
+    Returns {Time, Value}, where Time is the elapsed real time in microseconds, and Value is what is returned from the apply.
+
+    tc/2
+    Evaluates apply(Fun, Arguments). Otherwise the same as tc/3.
+
+    tc/1
+    Evaluates Fun(). Otherwise the same as tc/2.
+
+
+
+```shellerlang
+34> c(myring).
+{ok,myring}
+35> timer:tc(myring, start, [100000]).
+{116895,ok} %% 10W 0.1s多
+36> timer:tc(myring, start, [1000000]).
+{1283310,ok} %% 100W 1.2s多
+37> timer:tc(myring, start, [10000000]).
+{13522793,ok} %% 1000W 13s多
+```
+
+## 4-1 echo 服务器
+
+代码： /chapter4/echo.erl
+net_adm:ping(t@ddg).    
+
+rpc:call(t@ddg, echo, stop, []).
+
+rpc:call(t@ddg, echo, print, [he]).  
+
+## 4-2 进程环
+
+代码： /chapter4/ring.erl
