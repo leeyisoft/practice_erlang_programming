@@ -253,7 +253,7 @@ index:chpattern([1,1,2,3,4,5]).
 代码： /chapter3/text.erl
 
 ```shellerlang
-45> c(text).                
+45> c(text).
 {ok,text}
 46> text:format("text.txt").
 ```
@@ -280,7 +280,7 @@ ok
 undefined
 16> whereis(example_echo2).
 <0.81.0>
-17> regs().    
+17> regs().
 
 ** Registered procs on node nonode@nohost **
 Name                  Pid          Initial Call                      Reds Msgs
@@ -303,9 +303,9 @@ user                  <0.25.0>     group:server/3                      36    0
 user_drv              <0.24.0>     user_drv:server/2                15920    0
 
 ** Registered ports on node nonode@nohost **
-Name                  Id              Command                                 
+Name                  Id              Command
 ok
-18> example_echo2 ! stop.  
+18> example_echo2 ! stop.
 stop
 
 ```
@@ -319,7 +319,7 @@ stop
 {ok,my_timer}
 30> my_timer:send_after(3000, "hello leeyi").
 <0.108.0>
-31> flush().                                 
+31> flush().
 ok
 32> flush().
 Shell got "hello leeyi"
@@ -370,12 +370,28 @@ ok
 ## 4-1 echo 服务器
 
 代码： /chapter4/echo.erl
-net_adm:ping(t@ddg).    
+net_adm:ping(t@ddg).
 
 rpc:call(t@ddg, echo, stop, []).
 
-rpc:call(t@ddg, echo, print, [he]).  
+rpc:call(t@ddg, echo, print, [he]).
 
 ## 4-2 进程环
 
 代码： /chapter4/ring.erl
+
+process_1 ! stop.
+
+regs();
+
+registered().
+
+ring:start(3, 5, hello).
+
+```shellerang
+(t@LeeMac)1> c(ring).
+{ok,ring}
+(t@LeeMac)2> ring:start(3, 5, hello).
+ ring:start(1, 5, hello).
+```
+不能够停止，请 Ctr+C 再输入 a终止
