@@ -395,3 +395,12 @@ ring:start(3, 5, hello).
  ring:start(1, 5, hello).
 ```
 不能够停止，请 Ctr+C 再输入 a终止
+
+# 第五章 进程设计模式
+
+## 客户端服务器模型
+
+代码： /chapter5/frequency.erl
+
+## 进程模式实力
+代码： /chapter5/server.erl

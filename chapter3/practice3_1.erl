@@ -29,3 +29,15 @@ factorial2(N) when N>0 ->
     N * factorial(N-1).
 
 %% end 3-1
+
+max(List) ->
+    [H|Tail] = List,
+    max(Tail, H).
+
+max([], Max) ->
+    Max;
+
+max([H|Tail], Max) when H>Max ->
+    max(Tail, H);
+max([H|Tail], Max) ->
+    max(Tail, H).
