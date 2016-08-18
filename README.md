@@ -402,5 +402,40 @@ ring:start(3, 5, hello).
 
 代码： /chapter5/frequency.erl
 
-## 进程模式实力
+## 进程模式实例
 代码： /chapter5/server.erl
+
+## 有限转态机
+代码： /chapter5/fsm.erl
+
+## 事件管理器和句柄
+
+代码： /chapter5/event_manager.erl
+代码： /chapter5/log_handler.erl
+代码： /chapter5/io_handler.erl
+
+```shellerlang
+c(event_manager, [debug_info]), c(log_handler, [debug_info]), c(io_handler, [debug_info]).
+
+debugger:start().
+(t1@ddg)14> event_manager:start(alarm, [{log_handler, "AlarmLog.log"}]).
+ok
+(t1@ddg)15> event_manager:send_event(alarm, {raise_alarm, 10, cabinet_open}).
+ok
+(t1@ddg)16> event_manager:add_handler(alarm, io_handler, 1).
+ok  
+(t1@ddg)17> event_manager:send_event(alarm, {clear_alarm, 10, cabinet_open}).
+#1,2016:08:18,11:20:09,clear,10,cabinet_open
+ok
+(t1@ddg)18> event_manager:send_event(alarm, {event, 156, link_up}).
+ok
+(t1@ddg)19> event_manager:get_data(alarm, io_handler).
+{data,2}
+(t1@ddg)20> event_manager:delete_handler(alarm, stats_handler).
+{error,instance}
+event_manager:delete_handler(alarm, io_handler).
+{error,instance}
+(t1@ddg)21> event_manager:stop(alarm).
+[{io_handler,{count,2}},{log_handler,ok}]
+
+```
