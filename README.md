@@ -443,3 +443,25 @@ event_manager:delete_handler(alarm, io_handler).
 ## 5-1 一个数据库服务器
 
 代码： /chapter5/my_db.erl
+
+里面“而这以前可以通过多次调用allocate_frequency/0来实现。”这一句没有看懂，貌似也没有什么关系吧
+
+```erlangshell
+(t@LeeMac)79> c(frequency2).
+{ok,frequency2}
+(t@LeeMac)80> frequency2:start().
+true
+(t@LeeMac)81> frequency2:allocate().
+{ok,10}
+(t@LeeMac)82> frequency2:allocate().
+{ok,11}
+(t@LeeMac)83> frequency2:allocate().
+{ok,12}
+(t@LeeMac)84> frequency2:allocate().
+{error,"pid allocated more 3"}
+(t@LeeMac)85> frequency2:get_data().
+{[13,14,15],[{12,<0.145.0>},{11,<0.145.0>},{10,<0.145.0>}]}
+(t@LeeMac)86> frequency2:allocate().
+{error,"pid allocated more 3"}
+
+```
