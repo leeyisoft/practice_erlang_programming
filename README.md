@@ -423,7 +423,7 @@ ok
 (t1@ddg)15> event_manager:send_event(alarm, {raise_alarm, 10, cabinet_open}).
 ok
 (t1@ddg)16> event_manager:add_handler(alarm, io_handler, 1).
-ok  
+ok
 (t1@ddg)17> event_manager:send_event(alarm, {clear_alarm, 10, cabinet_open}).
 #1,2016:08:18,11:20:09,clear,10,cabinet_open
 ok
@@ -439,3 +439,7 @@ event_manager:delete_handler(alarm, io_handler).
 [{io_handler,{count,2}},{log_handler,ok}]
 
 ```
+
+## 5-1 一个数据库服务器
+
+代码： /chapter5/my_db.erl
