@@ -438,12 +438,16 @@ event_manager:delete_handler(alarm, io_handler).
 (t1@ddg)21> event_manager:stop(alarm).
 [{io_handler,{count,2}},{log_handler,ok}]
 
+
 ```
 
 ## 5-1 一个数据库服务器
 
 代码： /chapter5/my_db.erl
 
+## 5-2 更改频段服务器
+
+代码： /chapter5/my_db.erl
 里面“而这以前可以通过多次调用allocate_frequency/0来实现。”这一句没有看懂，貌似也没有什么关系吧
 
 ```erlangshell
@@ -464,4 +468,17 @@ true
 (t@LeeMac)86> frequency2:allocate().
 {error,"pid allocated more 3"}
 
+```
+
+## 5-3 交换句柄
+
+代码： /chapter5/event_manager.erl/swap_handlers/3
+
+```erlangshell
+event_manager:swap_handlers(alarm, io_handler, log_handler). % 会报错
+event_manager:swap_handlers(alarm, log_handler, io_handler).  % 可行
+```
+原因是：“请把OldHandler:terminate/1的返回值传递到NewHandler:init/调用。”，不知道作者为什么调添加这句话，而不是这么实现 ：
+```erlang
+event_manager:swap_handlers(Name, OldHandler, NewHandler, NewHandlerInitData)
 ```
