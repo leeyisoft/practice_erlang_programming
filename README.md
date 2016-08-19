@@ -482,3 +482,27 @@ event_manager:swap_handlers(alarm, log_handler, io_handler).  % 可行
 ```erlang
 event_manager:swap_handlers(Name, OldHandler, NewHandler, NewHandlerInitData)
 ```
+
+## 5-4 事件统计
+
+代码： /chapter5/stats_handler.erl
+貌似就这么简单的实现了
+```erlangshell
+event_manager:start(alarm, [{log_handler, "AlarmLog.log"}, {stats_handler, []}]).
+
+event_manager:send_event(alarm, {raise_alarm, 10, cabinet_open}).
+
+event_manager:get_data(alarm, io_handler).
+
+31> event_manager:get_data(alarm, log_handler).                      
+{data,<0.83.0>}
+32> event_manager:get_data(alarm, stats_handler).
+{data,[{{clear_alarm,cabinet_open},2},
+       {{alarm,cabinet_open},4},
+       {{raise_alarm,cabinet_open},2}]}
+33> event_manager:stop(alarm).
+[{log_handler,ok},
+ {stats_handler,[{{clear_alarm,cabinet_open},2},
+                 {{alarm,cabinet_open},4},
+                 {{raise_alarm,cabinet_open},2}]}]
+```
