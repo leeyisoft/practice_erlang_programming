@@ -506,3 +506,138 @@ event_manager:get_data(alarm, io_handler).
                  {{alarm,cabinet_open},4},
                  {{raise_alarm,cabinet_open},2}]}]
 ```
+
+5-5 FSM电话
+
+代码： /chapter5/fsm.erl
+
+还不太会做，先放一放。
+
+# 进程错误处理机制
+
+让它崩溃，让别人来处理它。 早崩溃。
+
+## 进程链接和退出信号
+
+
+代码：chapter6/add_one.erl
+代码：chapter6/add_two.erl
+
+* 传播语法
+
+|Reason |正常退出 trap_exit=true     | 非正常退出 trap_exit=false|
+|:------------- |:-------------| :-----|
+|normal |收到{'EXIT', Pid, normal}  | 没有任何事情发生|
+|kill   |当Reason时kill时，则无条件终止|当Reason是kill时，则无条件终止|
+|other  |收到{'EXIT', Pid, Other}   | 当Reason是other时，则无条件终止|
+```erlangshell
+5> c(add_one).
+{ok,add_one}
+6> process_flag(trap_exit, true).
+false
+7> self().
+<0.33.0>
+8> add_one:start().
+true
+9> self().
+<0.33.0>
+10> add_one:request(one).
+
+=ERROR REPORT==== 19-Aug-2016::21:04:28 ===
+Error in process <0.49.0> with exit value:
+{badarith,[{add_one,loop,0,[{file,"add_one.erl"},{line,21}]}]}
+timeout
+11> self().
+<0.33.0>
+12> flush().
+Shell got {'EXIT',<0.49.0>,
+                  {badarith,[{add_one,loop,0,
+                                      [{file,"add_one.erl"},{line,21}]}]}}
+ok
+13> flush().
+ok
+```
+
+## 系统健壮性
+
+代码：chapter6/frequency.erl
+
+```erlangshell
+3> c(frequency, [debug_info]).
+{ok,frequency}
+4> frequency:start().
+true
+5> frequency:allocate().
+{ok,10}
+6> self().
+<0.33.0>
+7> exit(self(), kill).
+** exception exit: killed
+8> self().
+<0.53.0>
+9> frequency:allocate().
+{ok,10}
+10> frequency:stop().
+```
+
+## 监控进程实例
+
+监控进程的唯一任务是启动工作进程并监控。
+
+spawn_link/3 启动成功 返回元组 {ok, Pid}, 失败返回
+
+代码：chapter6/my_supervisor.erl
+
+```erlangshell
+Eshell V7.3  (abort with ^G)
+1> c(my_supervisor).
+{ok,my_supervisor}
+2> my_supervisor:start_link(my_supervisor, [{add_two, start, []}]).
+ok
+3> self().
+<0.33.0>
+4> whereis(add_two).
+<0.42.0>
+5> exit(whereis(add_two,), kill).
+* 1: syntax error before: ')'
+5> exit(whereis(add_two), kill).
+true
+6> add_two:request(100).
+102
+7> whereis(add_two).
+<0.46.0>
+8> self().
+<0.33.0>
+```
+
+## 6-1 链接Ping Pong 服务器
+
+
+代码：chapter6/echo.erl
+
+```erlangshell
+1> c(echo).
+{ok,echo}
+2> echo:start().
+start self pid: <0.33.0>
+true
+3> whereis(echo).
+<0.40.0>
+4> self().
+<0.33.0>
+5> echo:stop().
+ok
+6> self().
+<0.33.0>
+7> whereis(echo).
+<0.40.0>
+8> flush().
+Shell got {'EXIT',<0.33.0>,normal}
+ok
+9>
+```
+上面的代码证明：
+执行 echo:stop() -> exit(self(), normal).
+{'EXIT',<0.33.0>,normal} 没有终止，消息也没有传递到 echo（<0.40.0>）
+
+* 暂时还不知道问题出在了那里？
