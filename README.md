@@ -494,7 +494,7 @@ event_manager:send_event(alarm, {raise_alarm, 10, cabinet_open}).
 
 event_manager:get_data(alarm, io_handler).
 
-31> event_manager:get_data(alarm, log_handler).                      
+31> event_manager:get_data(alarm, log_handler).
 {data,<0.83.0>}
 32> event_manager:get_data(alarm, stats_handler).
 {data,[{{clear_alarm,cabinet_open},2},
@@ -513,7 +513,7 @@ event_manager:get_data(alarm, io_handler).
 
 还不太会做，先放一放。
 
-# 进程错误处理机制
+# 第六章 进程错误处理机制
 
 让它崩溃，让别人来处理它。 早崩溃。
 
@@ -708,3 +708,72 @@ ok
 16> self().
 <0.33.0>
 ```
+
+## 6-3 监控进程
+
+暂时搞不定先放一放，继续后面的。
+
+# 第七章 记录和宏
+
+## 记录
+
+代码：chapter7/tuples1.erl
+
+## 介绍记录
+
+## 操作记录
+
+## 基于记录的函数和模式匹配
+
+代码：chapter7/records1.erl
+
+## 终端的记录
+
+[Using Record in Erlang Shell](http://www.cnblogs.com/me-sa/archive/2011/12/31/erlang0027.html)
+
+(t@LeeMac)23> c(records1).
+{ok,records1}
+(t@LeeMac)24> records1:joe().
+{person,"Joe",21,"999-999"}
+(t@LeeMac)25> records1:birthday(#person{age=30}).
+* 1: record person undefined
+(t@LeeMac)26> records1:birthday(#person{age=30}).
+* 1: record person undefined
+(t@LeeMac)27> rr(records1).
+[person]
+(t@LeeMac)28> c(records1).
+{ok,records1}
+(t@LeeMac)29> rr(records1).
+[person]
+(t@LeeMac)30> Person = #person{name="Mike", age=30}.
+#person{name = "Mike",age = 30,phone = []}
+(t@LeeMac)31> Person#person.age+1.
+31
+(t@LeeMac)32> NewPerson=Person#person{phone=5697}.
+#person{name = "Mike",age = 30,phone = 5697}
+(t@LeeMac)33> rd(name, {first, surname}).
+name
+(t@LeeMac)34> NewPerson=Person#person{name=#name{first="Mike", surname="Williams"}}.
+** exception error: no match of right hand side value
+                    #person{name = #name{first = "Mike",surname = "Williams"},
+                            age = 30,phone = []}
+(t@LeeMac)35> NewPerson=Person#person{name = #name{first="Mike", surname="Williams"}}.
+** exception error: no match of right hand side value
+                    #person{name = #name{first = "Mike",surname = "Williams"},
+                            age = 30,phone = []}
+(t@LeeMac)36> NewPerson2 = Person#person{name = #name{first="Mike", surname="Williams"}}.
+#person{name = #name{first = "Mike",surname = "Williams"},
+        age = 30,phone = []}
+(t@LeeMac)37> FirstName = (NewPerson#person.name)#name.first.
+** exception error: {badrecord,name}
+(t@LeeMac)38> FirstName = (NewPerson2#person.name)#name.first.
+"Mike"
+(t@LeeMac)39> rl().
+-record(name,{first,surname}).
+-record(persion,{name,age = 0,phone = ""}).
+-record(person,{name,age = 0,phone = ""}).
+ok
+(t@LeeMac)40> Person=Person#persion{name=#name{first="Chris", surname="Williams"}}.
+** exception error: {badrecord,persion}
+
+## 记录实现
