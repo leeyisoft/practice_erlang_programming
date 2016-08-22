@@ -15,7 +15,7 @@ print(Msg) ->
 
 stop() ->
     % ?MODULE ! stop,     ok.
-    exit(self(), normal),
+    exit(whereis(?MODULE), "hhh test"),
     ok.
 
 loop() ->
@@ -25,6 +25,7 @@ loop() ->
             loop();
         {'EXIT', _Pid, _Reason} ->
             io:format("receive EXIT PID ~p, REASON~p~n", [_Pid, _Reason]),
+            file:write_file("echo_recive_exit.log", list_to_binary("receive EXIT resason"++_Reason)),
             true;
         stop ->
             true

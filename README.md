@@ -641,3 +641,70 @@ ok
 {'EXIT',<0.33.0>,normal} 没有终止，消息也没有传递到 echo（<0.40.0>）
 
 * 暂时还不知道问题出在了那里？
+
+问题出在下面，“如果 Reason 是 normal，Pid 将不会退出。”
+
+```erlangshell
+exit(Pid, Reason) -> true
+```
+    向进程 Pid 以 Reason 退出原因发出一个退出信号。
+
+    如果进程 Pid 没有捕捉退出，那么进程将会以 Reason 的退出原因退出。如果进程 Pid 有捕捉退出，退出信号将转变为 {'EXIT', From, Reason} 格式的消息投送到进程的消息队列。From 是发送退出信号的进程的 pid。
+
+    如果 Reason 是 normal，Pid 将不会退出。如果进程捕捉了退出，，退出信号将转变为 {'EXIT', From, Reason} 格式的消息投送到进程的消息队列。
+
+    如果 Reason 是 kill，那么将给进程 Pid 发送一条不可捕获的退出信号，进程接收到信号后将以 killed 的原因无条件退出。
+
+
+## 6-2 一个可靠的互斥信号量
+
+
+代码：chapter6/mutex2.erl
+
+抄袭的 http://www.oschina.net/code/snippet_144663_4418 ， 自己还不会写，先理解理解吧
+
+```erlangshell
+1> c(mutex2).
+{ok,mutex2}
+2> mutex2:start().
+server pid is <0.40.0>.
+ok
+3> mutex2:wait().
+<0.33.0>.
+Signal is allocated. Linked.
+ok
+4> A = spawn(mutex2, wait, []).
+<0.43.0>.
+<0.43.0>
+5> B = spawn(mutex2, wait, []).
+<0.45.0>.
+<0.45.0>
+6> exit(A, 123).
+true
+7> mutex2:signal().
+Client is down. Signal return.<0.43.0> noproc.
+Signal return. Unlinked
+Signal is allocated. Linked.
+ok
+Client is down. Signal return.<0.45.0> normal.
+8> process_flag(trap_exit, false).
+false
+9> flush().
+ok
+10> try link(A)
+10> catch error:_ -> 43 end.
+43
+11> flush().
+ok
+12> process_flag(trap_exit, true).
+false
+13> flush().
+ok
+14> link(A).
+true
+15> flush().
+Shell got {'EXIT',<0.43.0>,noproc}
+ok
+16> self().
+<0.33.0>
+```
