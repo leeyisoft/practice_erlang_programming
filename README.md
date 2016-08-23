@@ -777,3 +777,79 @@ ok
 ** exception error: {badrecord,persion}
 
 ## 记录实现
+
+## 参数化宏
+
+## 调试和宏
+打开系统调试
+```
+c(Module, [{d, debug}]).
+
+c(Module, [{i, Dir}]).
+
+```
+例如
+```
+c(macros1, [{d, debug}]).
+
+c(macros1, ['E']).
+c(macros1, ['P']).   
+```
+* ?MODULE
+* ?MODULE_STRING
+* ?FILE
+* ?LINE
+* MACHINE % 目前（2016-08-23）一直是  BEAM
+
+```
+-undef(Flag).
+
+-ifdef(Flag).
+
+-ifndef(Flag).
+
+-else.
+
+-endif.
+
+
+```
+
+## include文件
+
+在模块中使用 -include指令，其通常放置在 module和export指令之后
+```
+-include("File.hrl").
+```
+其中，文件名两边的双引号是强制性的。包含文件贷后后缀.hrl，但不是强制的。
+
+## 7-1 扩展记录
+
+代码：chapter7/records2.erl
+通过下面执行，只有 showPerson需要修改
+```erlangshell
+52> c(records2).
+{ok,records2}
+53> rr(records2).
+[person]
+54> records:joe().
+** exception error: undefined function records:joe/0
+55> records:joe().
+records1    records2    
+55> records2:joe().
+#person{name = "Joe",age = 21,phone = "999-999",
+        address = []}
+56> records2:birthday(#person{age=3}).
+#person{name = undefined,age = 4,phone = [],address = []}
+57> records2:showPerson(#person{}).
+name:undefined age:0 phone:[]
+ok
+58> records2:showPerson(#person{address="hh"}).
+name:undefined age:0 phone:[]
+ok
+
+61> c(records2).                               
+{ok,records2}
+62> records2:showPerson(#person{address="hh"}).
+name:undefined age:0 phone:[] address:"hh"
+```

@@ -1,0 +1,17 @@
+-file("macros1.erl", 1).
+
+-module(macros1).
+
+-compile(export_all).
+
+-record(person,{name,age = 0,phone = ""}).
+
+test1() ->
+    io:format("~p=~p~n", ["length ( [ 1 , 2 , 3 ] )",length([1,2,3])]).
+
+birthday(#person{age = Age} = P) ->
+    ok,
+    P#person{age = Age + 1}.
+
+
+

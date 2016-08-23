@@ -1,8 +1,8 @@
--module (records1).
+-module (records2).
 
 -export ([birthday/1, joe/0, showPerson/1]).
 
--record (person, {name, age = 0, phone=""}).
+-record (person, {name, age = 0, phone="", address=""}).
 
 -ifdef(debug).
 -define (DBG(Str, Args), io:format(Str, Args)).
@@ -16,5 +16,5 @@ birthday(#person{age=Age}=P) ->
 joe() ->
     #person{name="Joe", age=21, phone="999-999"}.
 
-showPerson(#person{age=Age, phone=Phone, name=Name}) ->
-    io:format("name:~p age:~p phone:~p~n", [Name, Age, Phone]).
+showPerson(#person{age=Age, phone=Phone, name=Name, address=Address}) ->
+    io:format("name:~p age:~p phone:~p address:~p~n", [Name, Age, Phone, Address]).
