@@ -1,4 +1,4 @@
--module (records2).
+-module (p7_1).
 
 -export ([birthday/1, joe/0, showPerson/1]).
 

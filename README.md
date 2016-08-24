@@ -825,31 +825,47 @@ c(macros1, ['P']).
 
 ## 7-1 扩展记录
 
-代码：chapter7/records2.erl
+代码：chapter7/p7_1.erl
 通过下面执行，只有 showPerson需要修改
 ```erlangshell
-52> c(records2).
-{ok,records2}
-53> rr(records2).
+52> c(p7_1).
+{ok,p7_1}
+53> rr(p7_1).
 [person]
 54> records:joe().
 ** exception error: undefined function records:joe/0
 55> records:joe().
-records1    records2    
-55> records2:joe().
+records1    p7_1    
+55> p7_1:joe().
 #person{name = "Joe",age = 21,phone = "999-999",
         address = []}
-56> records2:birthday(#person{age=3}).
+56> p7_1:birthday(#person{age=3}).
 #person{name = undefined,age = 4,phone = [],address = []}
-57> records2:showPerson(#person{}).
+57> p7_1:showPerson(#person{}).
 name:undefined age:0 phone:[]
 ok
-58> records2:showPerson(#person{address="hh"}).
+58> p7_1:showPerson(#person{address="hh"}).
 name:undefined age:0 phone:[]
 ok
 
-61> c(records2).                               
-{ok,records2}
-62> records2:showPerson(#person{address="hh"}).
+61> c(p7_1).                               
+{ok,p7_1}
+62> p7_1:showPerson(#person{address="hh"}).
 name:undefined age:0 phone:[] address:"hh"
+```
+## 7-2 记录保护元
+
+代码：chapter7/p7_2.erl
+通过下面执行，只有 showPerson需要修改
+```erlangshell
+69> c(p7_2).                                                  
+{ok,p7_2}
+70> p7_2:boobar({persion,"leeyi"}).
+P is not recard: {persion,"leeyi"}
+ok
+71> p7_2:boobar(#person{name="leeyi"}).
+name:"leeyi" age:0 phone:[] address:[]
+ok
+72> p7_2:boobar(#person{name="leeyi"}).
+name:"leeyi" age:0 phone:[] address:[]
 ```
