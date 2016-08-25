@@ -869,3 +869,57 @@ ok
 72> p7_2:boobar(#person{name="leeyi"}).
 name:"leeyi" age:0 phone:[] address:[]
 ```
+
+## 7-3 db.erl练习回顾
+
+代码：chapter7/db.erl
+
+```erlangshell
+1> rr(db).
+[kv]
+2> c(db).
+{ok,db}
+3> Db = db:new().
+[]
+4> Db1 = db:write(#kv{key=leeyi, value="aaa", Db).
+* 1: syntax error before: ')'
+4> Db1 = db:write(#kv{key=leeyi, value="aaa"}, Db).
+[#kv{key = leeyi,value = "aaa"}]
+5> b().
+Db = []
+Db1 = [#kv{key = leeyi,value = "aaa"}]
+ok
+6> Db2 = db:write(#kv{key=leeyi2, value="bbb"}, Db1).
+[#kv{key = leeyi2,value = "bbb"},
+ #kv{key = leeyi,value = "aaa"}]
+7> Db3 = db:write(#kv{key=wangli, value="ccc"}, Db2).
+[#kv{key = wangli,value = "ccc"},
+ #kv{key = leeyi2,value = "bbb"},
+ #kv{key = leeyi,value = "aaa"}]
+8> db:match(leeyi, Db3).
+[]
+9> db:match(bbb, Db3).  
+[]
+10> db:match("bbb", Db3).
+["bbb"]
+11> Db4 = db:write(#kv{key=wangli, value="aaa"}, Db3).
+[#kv{key = wangli,value = "aaa"},
+ #kv{key = wangli,value = "ccc"},
+ #kv{key = leeyi2,value = "bbb"},
+ #kv{key = leeyi,value = "aaa"}]
+12> db:match("aaa", Db4).                             
+["aaa","aaa"]
+13> c(db).
+{ok,db}
+14> db:match("aaa", Db4).
+[wangli,leeyi]
+15> db:match("aaac", Db4).
+[]
+16> c(db).
+{ok,db}
+17> db:delete(leeyi2, Db4).
+[#kv{key = wangli,value = "aaa"},
+ #kv{key = wangli,value = "ccc"},
+ #kv{key = leeyi,value = "aaa"}]
+
+```
