@@ -928,7 +928,6 @@ ok
 
 ## 7-4 记录和形状
 
-
 代码：chapter7/graph.erl
 
 ```erlangshell
@@ -954,3 +953,24 @@ ok
 {error,"not is triangle"}
 
 ```
+
+## 7-5 二叉树记录
+
+第一感觉自己不会写，阅读了 http://www.tuicool.com/articles/Af2IRv 的代码，感觉很轻松，一口气读完了；自己理解这写了一遍
+
+代码：chapter7/binary_tree.erl
+
+```erlangshell
+
+Bt1 = #btree{value = 1,ltree = nil,rtree = nil}.
+
+Bt2 = #btree{value = 4,
+                ltree = #btree{value = 3,ltree = nil,rtree = nil},
+                rtree = #btree{value = 5,ltree = nil,rtree = nil}}
+Bt3 = #btree{value = 4,
+                ltree = #btree{value = 6,ltree = nil,rtree = nil},
+                rtree = #btree{value = 5,ltree = nil,rtree = nil}}
+
+Bt4 = #btree{value = 4,
+                ltree = Bt3,
+                rtree = #btree{value = 5,ltree = nil,rtree = nil}}
