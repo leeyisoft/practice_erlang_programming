@@ -874,11 +874,13 @@ name:"leeyi" age:0 phone:[] address:[]
 
 代码：chapter7/db.erl
 
+需要先编译了模型，之后才能够用 rr 加载模型的记录
+
 ```erlangshell
-1> rr(db).
-[kv]
-2> c(db).
+1> c(db).
 {ok,db}
+2> rr(db).
+[kv]
 3> Db = db:new().
 []
 4> Db1 = db:write(#kv{key=leeyi, value="aaa", Db).
@@ -921,5 +923,34 @@ ok
 [#kv{key = wangli,value = "aaa"},
  #kv{key = wangli,value = "ccc"},
  #kv{key = leeyi,value = "aaa"}]
+
+```
+
+## 7-4 记录和形状
+
+
+代码：chapter7/graph.erl
+
+```erlangshell
+1> c(graph).
+{ok,graph}
+2> rr(graph).
+[circle,rectangle,triangle]
+3> graph:area(#circle{radius=16}).
+804.247719318987
+4> graph:area(#rectangle{width=10, height=20.1}).
+201.0
+5> graph:area(#triangle{a=3,b=4,c=5}).     
+6.0
+6> graph:area(#triangle{a=3,b=4,c=7}).
+{error,"not is triangle"}
+7>graph:perimeter(#circle{radius=16}).
+100.53096491487338
+8>graph:perimeter(#rectangle{width=10, height=20.1}).
+60.2
+9> graph:perimeter(#triangle{a=3,b=4,c=5}).
+12
+10> graph:perimeter(#triangle{a=3,b=4,c=7}).
+{error,"not is triangle"}
 
 ```
