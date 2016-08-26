@@ -79,29 +79,69 @@ is_sorted(#btree{value=Value, ltree=LTree, rtree=RTree}) ->
 
 insert(#btree{value=_Value}=T, Tree) when not is_record(Tree, btree) ->
     T;
-insert(#btree{value=Value}=T, #btree{value=TValue, ltree=nil, rtree=nil}=Tree) ->
+insert(#btree{value=Value}=T, #btree{value=ParentValue, ltree=nil, rtree=nil}=Tree) ->
     if
-        Value =< TValue  ->
-            Tree#btree.ltree = T;
+        Value =< ParentValue  ->
+            Tree#btree{ltree = T};
         true ->
-            Tree#btree.rtree = T
+            Tree#btree{rtree = T}
     end;
-insert(#btree{value=Value}=T, #btree{value=TValue, ltree=LTree, rtree=nil}=Tree) ->
+insert(#btree{value=Value}=T, #btree{value=ParentValue, ltree=LTree, rtree=nil}=Tree) ->
+    #btree{value=LChildValue} = LTree,
     if
-        (Value=<TValue)   ->
-            insert(T, LTree);
+        Value =< ParentValue   ->
+            % Tree#btree{ltree = insert(T, LTree)};
+            if
+                Value =< LChildValue ->
+                    Tree#btree{ltree = insert(T, LTree)};
+                true ->
+                    Tree#btree{ltree = #btree{value=Value, ltree=LTree}}
+            end;
         true ->
-            Tree#btree.rtree = T
+            Tree#btree{rtree = T}
     end;
-insert(#btree{value=Value}=T, #btree{value=TValue, ltree=nil, rtree=RTree}=Tree) ->
-if
-    (Value=<TValue)   ->
-        Tree#btree.ltree = T;
-    true ->
-        insert(T, RTree)
-end.
+insert(#btree{value=Value}=T, #btree{value=ParentValue, ltree=nil, rtree=RTree}=Tree) ->
+    #btree{value=RChildValue} = RTree,
+    if
+        Value =< ParentValue   ->
+            Tree#btree{ltree = T};
+        true ->
+            % Tree#btree{rtree = insert(T, RTree)}
+            if
+                Value =< RChildValue ->
+                    Tree#btree{rtree = #btree{value=Value, rtree=RTree}};
+                true ->
+                    Tree#btree{rtree = insert(T, RTree)}
+            end
+    end;
+insert(#btree{value=Value}=T, #btree{value=ParentValue, ltree=LTree, rtree=RTree}=Tree) ->
+    #btree{value=LChildValue} = LTree,
+    #btree{value=RChildValue} = RTree,
+    if
+        Value =< ParentValue   ->
+            % Tree#btree{ltree = insert(T, LTree)};
+            if
+                Value =< LChildValue ->
+                    Tree#btree{ltree = insert(T, LTree)};
+                true ->
+                    Tree#btree{ltree = #btree{value=Value, ltree=LTree}}
+            end;
+        true ->
+            % Tree#btree{rtree = insert(T, RTree)}
+            if
+                Value =< RChildValue ->
+                    Tree#btree{rtree = #btree{value=Value, rtree=RTree}};
+                true ->
+                    Tree#btree{rtree = insert(T, RTree)}
+            end
+    end.
 
 test() ->
+    B1 = binary_tree:insert(#btree{value = 6}, a),
+    B2 = binary_tree:insert(#btree{value = 2}, B1),
+    B3 = binary_tree:insert(#btree{value = 7}, B2),
+    B4 = binary_tree:insert(#btree{value = 5}, B3),
+    io:format("B4 is ~p ~n", [B4]),
     Bt = #btree{value = 4,
                     ltree = #btree{value = 3,ltree = nil,rtree = nil},
                     rtree = #btree{
@@ -109,6 +149,7 @@ test() ->
                         rtree = #btree{value = 6,ltree = nil,rtree = nil}
                     }
                 },
+    io:format("Bt is_sorted ~p ~n", [is_sorted(Bt)]),
     Bt2 = #btree{value = 4,
                     ltree = #btree{value = 3,ltree = nil,rtree = nil},
                     rtree = #btree{

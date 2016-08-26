@@ -962,6 +962,7 @@ ok
 
 ```erlangshell
 
+
 Bt1 = #btree{value = 1,ltree = nil,rtree = nil}.
 
 Bt2 = #btree{value = 4,
@@ -974,3 +975,19 @@ Bt3 = #btree{value = 4,
 Bt4 = #btree{value = 4,
                 ltree = Bt3,
                 rtree = #btree{value = 5,ltree = nil,rtree = nil}}
+
+B1 = binary_tree:insert(#btree{value = 6}, a).
+B2 = binary_tree:insert(#btree{value = 2}, B1).
+B3 = binary_tree:insert(#btree{value = 10}, B2).
+B4 = binary_tree:insert(#btree{value = 5}, B3).
+
+B5 = binary_tree:insert(#btree{value = 1}, B4).
+
+B6 = binary_tree:insert(#btree{value = 3}, B5).
+
+B7 = binary_tree:insert(#btree{value = 8}, B4).
+B8 = binary_tree:insert(#btree{value = 7}, B7).
+B9 = binary_tree:insert(#btree{value = 9}, B8).
+
+
+```
