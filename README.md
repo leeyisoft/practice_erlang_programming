@@ -1002,3 +1002,146 @@ B9 = binary_tree:insert(#btree{value = 9}, B8).
 ## 升级模块
 
 代码：chapter8/db.erl
+
+```shell
+2> self().
+<0.33.0>
+3> c("chapter8/db").
+{ok,db}
+4> Db = db:new().
+5> Db1 = db:write(francesco, san_francisco, Db).
+6> Db2 = db:write(alison, london, Db1).
+7> db:read(francesco, Db2).
+** exception error: no case clause matching san_francisco
+     in function  db:read/2 (chapter8/db.erl, line 14)
+
+```
+
+修改db.erl，之后执行
+
+```shell
+c("chapter8/db").       
+{ok,db}
+13> db:read(francesco, Db2).
+{ok,san_francisco}
+15> db:module_info(attributes).
+[{vsn,['1.0.1']}]
+```
+
+## 幕后
+
+在任何时候，一个模块的两个版本都可以加载到运行时系统。我们称它们为旧的和当前的版本。
+
+代码：chapter8/modtest2.erl
+
+```shell
+18> c("chapter8/modtest2").
+{ok,modtest2}
+19> modtest2:main().
+true
+20> modtest2:do(99).
+101
+```
+
+修改代码，升级 a/1 函数的定义如下：
+```erlang
+a(N) ->
+    N.
+```
+重新编译，效果如下：
+```shell
+18> c("chapter8/modtest2").
+{ok,modtest2}
+19> modtest2:main().
+true
+20> modtest2:do(99).
+101
+21> c("chapter8/modtest2").
+{ok,modtest2}
+22> modtest2:do(99).
+101
+```
+
+明显没有发生变化。把 a/1 调用修改为一个完全限定的函数调用：
+
+```erlang
+loop() ->
+    receive
+        {Sender, N} ->
+            Sender ! modtest2:a(N)
+    end,
+    loop().
+```
+
+```shell
+33> c("chapter8/modtest2").
+{ok,modtest2}
+34> modtest2:do(99).
+99
+
+```
+
+
+## 载入代码
+
+* 通过调用一个尚未加载的模块中的函数载入代码；
+* 使用c(Module)终端命令，compile:file(Module)，或者他的派生函数之一；
+* 通过调用code:load_file(Module)显示的加载一个模块，在终端中使用l(Module)；
+
+## 代码服务器
+
+## 清除模块
+
+code:purge(Module) 去掉或者清除模块的旧版本，但是如果任何程序正在运行这些代码，它们将首先被终止，之后删除旧版本代码。调用的结果是，如果有任何程序被终止了该函数返回true，否则返回false。
+
+如果不想终止任何正在运行的旧版本代码的程序，请使用 code:soft_purge(Module)。这个调用只有子啊没有进程运行这些代码时，才会删除该模块的旧版本。如果有任何进程仍在运行这个代码，他会返回false，其他什么也不做。如果成功删除旧模块，他会返回true。
+
+## 升级过程
+
+代码：chapter8/db_server.erl
+
+## 例8-1：软件升级活动
+
+升级前准备活动
+```shell
+practice_erlang_programming/chapter8 [master●] » mkdir patches
+practice_erlang_programming/chapter8 [master●] » cd patches
+chapter8/patches [master●] » erlc db.erl 
+```
+
+```shell
+1> cd("chapter8").
+/Users/leeyi/workspace/erl/practice_erlang_programming/chapter8
+ok
+2> make:all([load]).
+Recompile: db
+up_to_date
+3> db:module_info(attributes).
+[{vsn,['1.0.1']}]
+5> db_server:start().
+true
+6> db_server:write(francesco, san_francisco).
+{write,francesco,san_francisco}
+7> db_server:write(alison, london).          
+{write,alison,london}
+8> db_server:read(alison).
+{ok,london}
+9> db_server:read(martin).
+{error,instance}
+10> code:add_patha("/Users/leeyi/workspace/erl/practice_erlang_programming/chapter8/patches").
+true
+11> code:load_file(db).
+{module,db}
+12> code:soft_purge(db).
+true
+13> db_server:upgrade(dict).
+{upgrade,dict}
+14> db:module_info(attributes).
+[{vsn,['1.0.2']}]
+15> db_server:write(martin, cairo).
+{write,martin,cairo}
+16> db_server:read(francesco).
+{ok,san_francisco}
+17> db_server:read(martin).
+{ok,cairo}
+```

@@ -2,7 +2,7 @@
 
 -export ([new/0, write/3, read/2, delete/2, destroy/1]).
 
--vsn(1.0).
+-vsn('1.0.1').
 
 new() ->
     dict:new().
@@ -11,7 +11,7 @@ write(Key, Data, Db) ->
     dict:store(Key, Data, Db).
 
 read(Key, Db) ->
-    case dict:fetch(Key, Db) of
+    case dict:find(Key, Db) of
         error ->
             {error, instance};
         {ok, Data} ->
