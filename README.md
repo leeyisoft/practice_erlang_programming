@@ -995,3 +995,10 @@ B9 = binary_tree:insert(#btree{value = 9}, B8).
 ## 7-6 参数化宏
 
 代码：chapter7/binary_tree.erl
+
+
+# 第八章 软件升级
+
+## 升级模块
+
+代码：chapter8/db.erl
