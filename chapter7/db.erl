@@ -18,6 +18,7 @@ new() ->
     [].
 
 write(Data, Db) when is_record(Data, kv) ->
+    ?dbg("hello ~p~n", [Db]),
     [Data|Db].
 
 read(Key, Db) ->
